@@ -1,13 +1,18 @@
 // ==UserScript==
-// @name         ChatGPT Reset Expiry｜重置额度有效期查询
+// @name         ChatGPT Reset Expiry｜ChatGPT 重置额度有效期查询插件
 // @name:en      ChatGPT Reset Expiry
 // @name:zh      ChatGPT 重置额度有效期查询插件
 // @name:zh-CN   ChatGPT 重置额度有效期查询插件
 // @name:zh-HK   ChatGPT 重置額度有效期查詢插件
 // @name:zh-MO   ChatGPT 重置額度有效期查詢插件
 // @name:zh-TW   ChatGPT 重置額度有效期查詢插件
+// @name:ja      ChatGPT リセットクレジット有効期限確認ツール
+// @name:ko      ChatGPT 리셋 크레딧 만료 시간 확인 도구
+// @name:es      ChatGPT Reset Expiry｜Consulta de caducidad de créditos
+// @name:de      ChatGPT Reset Expiry｜Ablaufzeit der Reset-Credits
+// @name:fr      ChatGPT Reset Expiry｜Vérification de l’expiration des crédits
 // @namespace    https://github.com/kadto183/chatgpt-reset-expiry
-// @version      1.15
+// @version      1.16
 // @description  View the exact expiration time of ChatGPT reset credits in your browser's local timezone.｜查询 ChatGPT 重置额度的准确有效期与失效时间，并自动转换为浏览器当前时区。
 // @description:en View the exact expiration time of ChatGPT reset credits in your browser's local timezone.
 // @description:zh 查询 ChatGPT 重置额度的准确有效期与失效时间，精确到秒并自动转换为浏览器当前时区。
@@ -15,6 +20,11 @@
 // @description:zh-HK 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
 // @description:zh-MO 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
 // @description:zh-TW 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
+// @description:ja ChatGPT のリセットクレジットの正確な有効期限を秒単位で確認し、ブラウザのローカルタイムゾーンで表示します。
+// @description:ko ChatGPT 리셋 크레딧의 정확한 만료 시간을 초 단위로 확인하고 브라우저의 현지 시간대로 표시합니다.
+// @description:es Consulta la hora exacta de caducidad de los créditos de restablecimiento de ChatGPT y conviértela a la zona horaria local del navegador.
+// @description:de Zeigt die genaue Ablaufzeit der ChatGPT Reset-Credits an und rechnet sie in die lokale Browser-Zeitzone um.
+// @description:fr Affiche l’heure exacte d’expiration des crédits de réinitialisation ChatGPT et la convertit dans le fuseau horaire local du navigateur.
 // @author       kadto183
 // @license      MIT
 // @homepageURL  https://github.com/kadto183/chatgpt-reset-expiry
@@ -2138,7 +2148,7 @@
 
     console.log(
         PREFIX,
-        'v1.15 started',
+        'v1.16 started',
         {
             timeZone: LOCAL_TIME_ZONE,
             language: UI_LANG,
