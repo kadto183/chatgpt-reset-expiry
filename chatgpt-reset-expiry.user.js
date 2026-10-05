@@ -1,12 +1,16 @@
 // ==UserScript==
-// @name         ChatGPT Reset Expiry
+// @name         ChatGPT Reset Expiry｜重置额度有效期查询
+// @name:en      ChatGPT Reset Expiry
+// @name:zh      ChatGPT 重置额度有效期查询插件
 // @name:zh-CN   ChatGPT 重置额度有效期查询插件
 // @name:zh-HK   ChatGPT 重置額度有效期查詢插件
 // @name:zh-MO   ChatGPT 重置額度有效期查詢插件
 // @name:zh-TW   ChatGPT 重置額度有效期查詢插件
 // @namespace    https://github.com/kadto183/chatgpt-reset-expiry
-// @version      1.1.3
-// @description  View the exact expiration time of ChatGPT reset credits in your browser's local timezone.
+// @version      1.15
+// @description  View the exact expiration time of ChatGPT reset credits in your browser's local timezone.｜查询 ChatGPT 重置额度的准确有效期与失效时间，并自动转换为浏览器当前时区。
+// @description:en View the exact expiration time of ChatGPT reset credits in your browser's local timezone.
+// @description:zh 查询 ChatGPT 重置额度的准确有效期与失效时间，精确到秒并自动转换为浏览器当前时区。
 // @description:zh-CN 查询 ChatGPT 重置额度的准确有效期与失效时间，精确到秒并自动转换为浏览器当前时区。
 // @description:zh-HK 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
 // @description:zh-MO 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
@@ -2134,7 +2138,7 @@
 
     console.log(
         PREFIX,
-        'v1.1.3 started',
+        'v1.15 started',
         {
             timeZone: LOCAL_TIME_ZONE,
             language: UI_LANG,
