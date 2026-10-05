@@ -24,10 +24,14 @@ ChatGPT 的重置额度界面有时只显示到期日期，不显示具体时间
 - 中国香港、中国澳门、中国台湾时区自动使用繁体中文界面
 - 其他时区默认使用英文界面
 - 自动处理 UTC 偏移与夏令时
-- 默认保持最小化，仅在确认检测到重置额度后自动展开一次
+- 默认保持最小化，仅在确认检测到重置额度后按用户偏好展开
+- 自动记住展开 / 收起状态
+- 悬浮窗口支持拖动，并记住用户放置的位置
+- 自动适配深色与浅色主题
+- 主界面只显示仍然有效的额度，已失效额度收进历史折叠区
 - 自动去重并按失效时间排序
 - 标记最近到期的额度
-- 支持一键复制全部时间
+- 支持一键复制全部有效额度时间
 - 其他候选字段默认折叠，避免干扰主结果
 
 ### 安装
@@ -46,7 +50,7 @@ Userscript 管理器应会自动打开安装页面。
 2. 脚本默认只显示一个小型“重置额度”条。
 3. 正常浏览 ChatGPT 或进入 Usage / 使用情况相关页面。
 4. 如果页面返回有效的 Reset Credits 数据，脚本会自动展开一次并显示精确失效时间。
-5. 手动收起后，同一页面中的重复请求不会反复弹出。
+5. 手动展开、收起或拖动悬浮窗口后，插件会记住你的界面偏好与位置。
 
 ### 隐私与安全
 
@@ -94,10 +98,13 @@ Intl.DateTimeFormat().resolvedOptions().timeZone
 - Shows expiration timestamps down to the second
 - Converts timestamps to the browser's local timezone
 - Automatically handles UTC offsets and daylight saving time
-- Starts collapsed and auto-opens only after valid reset-credit data is detected
+- Starts collapsed and respects the user's saved expand/collapse preference
+- Supports dragging and remembers the panel position
+- Adapts automatically to light and dark themes
+- Shows active credits in the main view and keeps expired credits in a collapsed history section
 - Deduplicates and sorts expiration times
 - Highlights the next credit to expire
-- Copies all expiration times with one click
+- Copies all active expiration times with one click
 - Keeps unrelated detected timestamps in a collapsed secondary section
 
 ### Installation
