@@ -5,7 +5,7 @@
 // @name:zh-MO   ChatGPT 重置額度有效期查詢插件
 // @name:zh-TW   ChatGPT 重置額度有效期查詢插件
 // @namespace    https://github.com/kadto183/chatgpt-reset-expiry
-// @version      1.1.1
+// @version      1.1.2
 // @description  View the exact expiration time of ChatGPT reset credits in your browser's local timezone.
 // @description:zh-CN 查询 ChatGPT 重置额度的准确有效期与失效时间，精确到秒并自动转换为浏览器当前时区。
 // @description:zh-HK 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
@@ -123,7 +123,6 @@
             expired: '已失效',
             copy: '复制全部时间',
             copied: '已复制',
-            clear: '清空记录',
             other: '其他检测结果',
             noOther: '暂无其他检测结果',
             source: '数据来源',
@@ -147,7 +146,6 @@
             expired: '已失效',
             copy: '複製全部時間',
             copied: '已複製',
-            clear: '清除記錄',
             other: '其他偵測結果',
             noOther: '暫無其他偵測結果',
             source: '資料來源',
@@ -172,7 +170,6 @@
             expired: 'Expired',
             copy: 'Copy All Times',
             copied: 'Copied',
-            clear: 'Clear',
             other: 'Other Detected Results',
             noOther: 'No other results',
             source: 'Data source',
@@ -1059,7 +1056,8 @@
 
         .grf-action-btn {
             flex: 1;
-            padding: 7px 10px;
+            width: 100%;
+            padding: 8px 10px;
             border-radius: 8px;
             border: 1px solid rgba(255,255,255,.10);
             background: rgba(255,255,255,.043);
@@ -1321,11 +1319,6 @@
                         class="grf-action-btn"
                         id="grf-copy"
                     >${escapeHtml(T.copy)}</button>
-
-                    <button
-                        class="grf-action-btn"
-                        id="grf-clear"
-                    >${escapeHtml(T.clear)}</button>
                 </div>
 
                 <div id="grf-other-header">
@@ -1393,15 +1386,6 @@
                 event.stopPropagation();
                 dismissed = true;
                 panel.style.display = 'none';
-            };
-
-
-        panel
-            .querySelector('#grf-clear')
-            .onclick = () => {
-                resetCredits.clear();
-                otherMatches.clear();
-                render();
             };
 
 
@@ -2095,7 +2079,7 @@
 
     console.log(
         PREFIX,
-        'v1.1.1 started',
+        'v1.1.2 started',
         {
             timeZone: LOCAL_TIME_ZONE,
             language: UI_LANG,
