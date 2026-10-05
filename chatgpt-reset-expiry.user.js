@@ -1,10 +1,16 @@
 // ==UserScript==
 // @name         ChatGPT Reset Expiry
 // @name:zh-CN   ChatGPT 重置额度有效期查询插件
+// @name:zh-HK   ChatGPT 重置額度有效期查詢插件
+// @name:zh-MO   ChatGPT 重置額度有效期查詢插件
+// @name:zh-TW   ChatGPT 重置額度有效期查詢插件
 // @namespace    https://github.com/kadto183/chatgpt-reset-expiry
-// @version      1.0.1
+// @version      1.0.2
 // @description  View the exact expiration time of ChatGPT reset credits in your browser's local timezone.
 // @description:zh-CN 查询 ChatGPT 重置额度的准确有效期与失效时间，精确到秒并自动转换为浏览器当前时区。
+// @description:zh-HK 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
+// @description:zh-MO 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
+// @description:zh-TW 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
 // @author       kadto183
 // @license      MIT
 // @homepageURL  https://github.com/kadto183/chatgpt-reset-expiry
@@ -46,26 +52,43 @@
     const LOCAL_TIME_ZONE =
         Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
-    const CHINESE_TIME_ZONES = new Set([
+    const SIMPLIFIED_CHINESE_TIME_ZONES = new Set([
         'Asia/Shanghai',
         'Asia/Chongqing',
         'Asia/Chungking',
         'Asia/Harbin',
         'Asia/Urumqi',
-        'Asia/Kashgar',
-        'Asia/Hong_Kong',
-        'Asia/Macau',
-        'Asia/Taipei'
+        'Asia/Kashgar'
     ]);
 
-    const IS_CHINESE_ZONE =
-        CHINESE_TIME_ZONES.has(LOCAL_TIME_ZONE);
+    const TRADITIONAL_CHINESE_TIME_ZONE_LOCALES = {
+        'Asia/Hong_Kong': 'zh-HK',
+        'Asia/Macau': 'zh-MO',
+        'Asia/Taipei': 'zh-TW'
+    };
+
+    const IS_SIMPLIFIED_CHINESE_ZONE =
+        SIMPLIFIED_CHINESE_TIME_ZONES.has(LOCAL_TIME_ZONE);
+
+    const IS_TRADITIONAL_CHINESE_ZONE =
+        Object.prototype.hasOwnProperty.call(
+            TRADITIONAL_CHINESE_TIME_ZONE_LOCALES,
+            LOCAL_TIME_ZONE
+        );
 
     const UI_LANG =
-        IS_CHINESE_ZONE ? 'zh' : 'en';
+        IS_SIMPLIFIED_CHINESE_ZONE
+            ? 'zh-Hans'
+            : IS_TRADITIONAL_CHINESE_ZONE
+                ? 'zh-Hant'
+                : 'en';
 
     const UI_LOCALE =
-        IS_CHINESE_ZONE ? 'zh-CN' : 'en-US';
+        IS_SIMPLIFIED_CHINESE_ZONE
+            ? 'zh-CN'
+            : TRADITIONAL_CHINESE_TIME_ZONE_LOCALES[
+                LOCAL_TIME_ZONE
+            ] || 'en-US';
 
     const CHINESE_ZONE_NAMES = {
         'Asia/Shanghai': '中国标准时间',
@@ -74,9 +97,9 @@
         'Asia/Harbin': '中国标准时间',
         'Asia/Urumqi': '中国乌鲁木齐时间',
         'Asia/Kashgar': '中国喀什时间',
-        'Asia/Hong_Kong': '中国香港时间',
-        'Asia/Macau': '中国澳门时间',
-        'Asia/Taipei': '中国台湾时间'
+        'Asia/Hong_Kong': '中國香港時間',
+        'Asia/Macau': '中國澳門時間',
+        'Asia/Taipei': '中國台灣時間'
     };
 
 
@@ -85,7 +108,7 @@
     // ---------------------------------------------------------------------
 
     const TEXT = {
-        zh: {
+        'zh-Hans': {
             title: 'GPT 重置额度有效期查询',
             subtitle: '查询额度具体到几点失效',
             waiting: '正在检测当前页面…',
@@ -103,6 +126,26 @@
             timezone: '当前时区',
             toggle: '展开或收起',
             close: '关闭'
+        },
+
+        'zh-Hant': {
+            title: 'GPT 重置額度有效期查詢',
+            subtitle: '查詢額度具體到幾點失效',
+            waiting: '正在偵測目前頁面…',
+            found: count => `已找到 ${count} 個重置額度`,
+            empty: '目前尚未偵測到重置額度',
+            credit: index => `重置額度 ${index}`,
+            nearest: '最近到期',
+            expired: '已失效',
+            copy: '複製全部時間',
+            copied: '已複製',
+            clear: '清除記錄',
+            other: '其他偵測結果',
+            noOther: '暫無其他偵測結果',
+            source: '資料來源',
+            timezone: '目前時區',
+            toggle: '展開或收起',
+            close: '關閉'
         },
 
         en: {
@@ -285,10 +328,7 @@
 
 
     function getTimeZoneDisplayName(date) {
-        if (
-            IS_CHINESE_ZONE &&
-            CHINESE_ZONE_NAMES[LOCAL_TIME_ZONE]
-        ) {
+        if (CHINESE_ZONE_NAMES[LOCAL_TIME_ZONE]) {
             return CHINESE_ZONE_NAMES[LOCAL_TIME_ZONE];
         }
 
@@ -1462,7 +1502,7 @@
 
     console.log(
         PREFIX,
-        'v1.0.1 started',
+        'v1.0.2 started',
         {
             timeZone: LOCAL_TIME_ZONE,
             language: UI_LANG,
