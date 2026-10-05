@@ -5,7 +5,7 @@
 // @name:zh-MO   ChatGPT 重置額度有效期查詢插件
 // @name:zh-TW   ChatGPT 重置額度有效期查詢插件
 // @namespace    https://github.com/kadto183/chatgpt-reset-expiry
-// @version      1.0.2
+// @version      1.1.1
 // @description  View the exact expiration time of ChatGPT reset credits in your browser's local timezone.
 // @description:zh-CN 查询 ChatGPT 重置额度的准确有效期与失效时间，精确到秒并自动转换为浏览器当前时区。
 // @description:zh-HK 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
@@ -112,8 +112,12 @@
             title: 'GPT 重置额度有效期查询',
             subtitle: '查询额度具体到几点失效',
             waiting: '正在检测当前页面…',
-            found: count => `已找到 ${count} 个重置额度`,
+            found: count => `当前有效额度 ${count} 个`,
             empty: '当前尚未检测到重置额度',
+            noActive: '当前没有有效的重置额度',
+            history: '已失效额度',
+            dataReady: '✓ 已从 ChatGPT 页面数据读取',
+            dataWaiting: '等待 ChatGPT 页面数据',
             credit: index => `重置额度 ${index}`,
             nearest: '最近到期',
             expired: '已失效',
@@ -132,8 +136,12 @@
             title: 'GPT 重置額度有效期查詢',
             subtitle: '查詢額度具體到幾點失效',
             waiting: '正在偵測目前頁面…',
-            found: count => `已找到 ${count} 個重置額度`,
+            found: count => `目前有效額度 ${count} 個`,
             empty: '目前尚未偵測到重置額度',
+            noActive: '目前沒有有效的重置額度',
+            history: '已失效額度',
+            dataReady: '✓ 已從 ChatGPT 頁面資料讀取',
+            dataWaiting: '等待 ChatGPT 頁面資料',
             credit: index => `重置額度 ${index}`,
             nearest: '最近到期',
             expired: '已失效',
@@ -153,8 +161,12 @@
             subtitle: 'View the exact expiration time',
             waiting: 'Checking the current page…',
             found: count =>
-                `${count} reset credit${count === 1 ? '' : 's'} found`,
+                `${count} active reset credit${count === 1 ? '' : 's'}`,
             empty: 'No reset credits detected on this page',
+            noActive: 'No active reset credits',
+            history: 'Expired Credits',
+            dataReady: '✓ Read from ChatGPT page data',
+            dataWaiting: 'Waiting for ChatGPT page data',
             credit: index => `Reset Credit ${index}`,
             nearest: 'Expires Next',
             expired: 'Expired',
@@ -185,12 +197,37 @@
     let otherList = null;
     let statusEl = null;
 
-    // Start quietly. The panel only auto-opens after real reset-credit data
-    // has been detected.
+    const STORAGE_KEYS = {
+        panelPreference: 'chatgpt-reset-expiry:panel-preference',
+        panelPosition: 'chatgpt-reset-expiry:panel-position'
+    };
+
+    function readStorage(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function writeStorage(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (_) {}
+    }
+
+    // Always start quietly. Saved preferences are applied after confirmed
+    // reset-credit data is detected.
+    const savedPanelPreference =
+        readStorage(STORAGE_KEYS.panelPreference);
+
     let isExpanded = false;
-    let userCollapsed = false;
+    let userCollapsed =
+        savedPanelPreference === 'collapsed';
+
     let autoExpandedOnce = false;
     let dismissed = false;
+    let suppressHeaderClick = false;
 
 
     // ---------------------------------------------------------------------
@@ -413,6 +450,11 @@
 
         if (byUser) {
             userCollapsed = !expanded;
+
+            writeStorage(
+                STORAGE_KEYS.panelPreference,
+                expanded ? 'expanded' : 'collapsed'
+            );
         }
 
         applyExpandedState();
@@ -422,7 +464,6 @@
     function maybeAutoExpand() {
         if (
             dismissed ||
-            userCollapsed ||
             autoExpandedOnce ||
             resetCredits.size === 0
         ) {
@@ -430,7 +471,322 @@
         }
 
         autoExpandedOnce = true;
+
+        if (
+            savedPanelPreference === 'collapsed' ||
+            userCollapsed
+        ) {
+            return;
+        }
+
         setExpanded(true, false);
+    }
+
+
+    function detectDarkTheme() {
+        const root = document.documentElement;
+        const body = document.body;
+
+        const explicitTheme =
+            root?.getAttribute('data-theme') ||
+            body?.getAttribute?.('data-theme');
+
+        if (explicitTheme === 'dark') return true;
+        if (explicitTheme === 'light') return false;
+
+        if (
+            root?.classList.contains('dark') ||
+            body?.classList?.contains('dark')
+        ) {
+            return true;
+        }
+
+        if (
+            root?.classList.contains('light') ||
+            body?.classList?.contains('light')
+        ) {
+            return false;
+        }
+
+        return window.matchMedia?.(
+            '(prefers-color-scheme: dark)'
+        )?.matches ?? true;
+    }
+
+
+    function applyTheme() {
+        if (!panel) return;
+
+        const dark =
+            detectDarkTheme();
+
+        panel.classList.toggle(
+            'grf-dark',
+            dark
+        );
+
+        panel.classList.toggle(
+            'grf-light',
+            !dark
+        );
+    }
+
+
+    function installThemeWatcher() {
+        const observer =
+            new MutationObserver(applyTheme);
+
+        observer.observe(
+            document.documentElement,
+            {
+                attributes: true,
+                attributeFilter: [
+                    'class',
+                    'data-theme',
+                    'style'
+                ]
+            }
+        );
+
+        const media =
+            window.matchMedia?.(
+                '(prefers-color-scheme: dark)'
+            );
+
+        if (media?.addEventListener) {
+            media.addEventListener(
+                'change',
+                applyTheme
+            );
+        }
+    }
+
+
+    function clampPanelPosition(left, top) {
+        const width =
+            panel?.offsetWidth || 174;
+
+        const height =
+            panel?.offsetHeight || 44;
+
+        const margin = 8;
+
+        return {
+            left: Math.min(
+                Math.max(margin, left),
+                Math.max(
+                    margin,
+                    window.innerWidth - width - margin
+                )
+            ),
+            top: Math.min(
+                Math.max(margin, top),
+                Math.max(
+                    margin,
+                    window.innerHeight - height - margin
+                )
+            )
+        };
+    }
+
+
+    function restorePanelPosition() {
+        const raw =
+            readStorage(
+                STORAGE_KEYS.panelPosition
+            );
+
+        if (!raw || !panel) return;
+
+        try {
+            const saved =
+                JSON.parse(raw);
+
+            if (
+                !Number.isFinite(saved.left) ||
+                !Number.isFinite(saved.top)
+            ) {
+                return;
+            }
+
+            const pos =
+                clampPanelPosition(
+                    saved.left,
+                    saved.top
+                );
+
+            panel.style.left =
+                `${pos.left}px`;
+
+            panel.style.top =
+                `${pos.top}px`;
+
+            panel.style.right =
+                'auto';
+        } catch (_) {}
+    }
+
+
+    function savePanelPosition() {
+        if (!panel) return;
+
+        const rect =
+            panel.getBoundingClientRect();
+
+        writeStorage(
+            STORAGE_KEYS.panelPosition,
+            JSON.stringify({
+                left: Math.round(rect.left),
+                top: Math.round(rect.top)
+            })
+        );
+    }
+
+
+    function installDragBehaviour() {
+        if (!panel) return;
+
+        const header =
+            panel.querySelector('#grf-header');
+
+        if (!header) return;
+
+        let dragging = false;
+        let startX = 0;
+        let startY = 0;
+        let startLeft = 0;
+        let startTop = 0;
+        let moved = false;
+
+        header.addEventListener(
+            'pointerdown',
+            event => {
+                if (
+                    event.button !== 0 ||
+                    event.target.closest(
+                        '#grf-header-actions'
+                    )
+                ) {
+                    return;
+                }
+
+                const rect =
+                    panel.getBoundingClientRect();
+
+                dragging = true;
+                moved = false;
+                startX = event.clientX;
+                startY = event.clientY;
+                startLeft = rect.left;
+                startTop = rect.top;
+
+                header.setPointerCapture?.(
+                    event.pointerId
+                );
+            }
+        );
+
+        header.addEventListener(
+            'pointermove',
+            event => {
+                if (!dragging) return;
+
+                const dx =
+                    event.clientX - startX;
+
+                const dy =
+                    event.clientY - startY;
+
+                if (
+                    Math.abs(dx) > 4 ||
+                    Math.abs(dy) > 4
+                ) {
+                    moved = true;
+                }
+
+                if (!moved) return;
+
+                const pos =
+                    clampPanelPosition(
+                        startLeft + dx,
+                        startTop + dy
+                    );
+
+                panel.style.left =
+                    `${pos.left}px`;
+
+                panel.style.top =
+                    `${pos.top}px`;
+
+                panel.style.right =
+                    'auto';
+
+                event.preventDefault();
+            }
+        );
+
+        const endDrag =
+            event => {
+                if (!dragging) return;
+
+                dragging = false;
+
+                if (moved) {
+                    suppressHeaderClick = true;
+                    savePanelPosition();
+
+                    setTimeout(
+                        () => {
+                            suppressHeaderClick =
+                                false;
+                        },
+                        0
+                    );
+                }
+
+                try {
+                    header.releasePointerCapture?.(
+                        event.pointerId
+                    );
+                } catch (_) {}
+            };
+
+        header.addEventListener(
+            'pointerup',
+            endDrag
+        );
+
+        header.addEventListener(
+            'pointercancel',
+            endDrag
+        );
+
+        window.addEventListener(
+            'resize',
+            () => {
+                if (!panel) return;
+
+                const rect =
+                    panel.getBoundingClientRect();
+
+                const pos =
+                    clampPanelPosition(
+                        rect.left,
+                        rect.top
+                    );
+
+                panel.style.left =
+                    `${pos.left}px`;
+
+                panel.style.top =
+                    `${pos.top}px`;
+
+                panel.style.right =
+                    'auto';
+
+                savePanelPosition();
+            }
+        );
     }
 
 
@@ -501,6 +857,8 @@
 
         #grf-header {
             display: flex;
+            cursor: move;
+            touch-action: none;
             align-items: center;
             justify-content: space-between;
             padding: 14px 14px 12px;
@@ -758,12 +1116,135 @@
             font-size: 12px;
         }
 
+        #grf-history-header {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-top: 1px solid rgba(255,255,255,.07);
+            color: #808080;
+            font-size: 11px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #grf-history-header.grf-visible {
+            display: flex;
+        }
+
+        #grf-history-header:hover {
+            background: rgba(255,255,255,.025);
+        }
+
+        #grf-history-list {
+            display: none;
+            padding: 0 12px 10px;
+        }
+
+        #grf-history-list .grf-card {
+            opacity: .55;
+        }
+
         #grf-footer {
             padding: 0 14px 12px;
-            color: #555;
-            font-size: 9px;
+            color: #666;
+            font-size: 9.5px;
             line-height: 1.5;
             word-break: break-all;
+        }
+
+        #gpt-reset-finder-panel.grf-light {
+            color: #202123;
+            background: rgba(255,255,255,.98);
+            border-color: rgba(0,0,0,.11);
+            box-shadow: 0 16px 45px rgba(0,0,0,.16);
+        }
+
+        #gpt-reset-finder-panel.grf-light #grf-header {
+            border-bottom-color: rgba(0,0,0,.08);
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(0,0,0,.025),
+                    rgba(0,0,0,0)
+                );
+        }
+
+        #gpt-reset-finder-panel.grf-light #grf-title,
+        #gpt-reset-finder-panel.grf-light .grf-date {
+            color: #202123;
+        }
+
+        #gpt-reset-finder-panel.grf-light #grf-subtitle,
+        #gpt-reset-finder-panel.grf-light #grf-status,
+        #gpt-reset-finder-panel.grf-light .grf-card-name {
+            color: #5f6368;
+        }
+
+        #gpt-reset-finder-panel.grf-light #grf-current-zone,
+        #gpt-reset-finder-panel.grf-light .grf-zone,
+        #gpt-reset-finder-panel.grf-light #grf-footer {
+            color: #777;
+        }
+
+        #gpt-reset-finder-panel.grf-light .grf-card {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(0,0,0,.025),
+                    rgba(0,0,0,.012)
+                );
+            border-color: rgba(0,0,0,.10);
+        }
+
+        #gpt-reset-finder-panel.grf-light .grf-card.grf-nearest {
+            border-color: rgba(180,130,0,.45);
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(236,188,72,.12),
+                    rgba(0,0,0,.01)
+                );
+        }
+
+        #gpt-reset-finder-panel.grf-light .grf-time {
+            color: #9a6700;
+        }
+
+        #gpt-reset-finder-panel.grf-light .grf-icon-btn {
+            color: #666;
+        }
+
+        #gpt-reset-finder-panel.grf-light .grf-icon-btn:hover,
+        #gpt-reset-finder-panel.grf-light .grf-action-btn:hover {
+            background: rgba(0,0,0,.06);
+            color: #202123;
+        }
+
+        #gpt-reset-finder-panel.grf-light .grf-action-btn {
+            border-color: rgba(0,0,0,.10);
+            background: rgba(0,0,0,.025);
+            color: #444;
+        }
+
+        #gpt-reset-finder-panel.grf-light #grf-other-header,
+        #gpt-reset-finder-panel.grf-light #grf-history-header {
+            border-top-color: rgba(0,0,0,.07);
+            color: #666;
+        }
+
+        #gpt-reset-finder-panel.grf-light #grf-other-header:hover,
+        #gpt-reset-finder-panel.grf-light #grf-history-header:hover {
+            background: rgba(0,0,0,.025);
+        }
+
+        #gpt-reset-finder-panel.grf-light .grf-other-item {
+            border-top-color: rgba(0,0,0,.06);
+            color: #666;
+        }
+
+        #gpt-reset-finder-panel.grf-light .grf-empty {
+            color: #777;
         }
         `;
 
@@ -825,6 +1306,16 @@
                     </div>
                 </div>
 
+                <div id="grf-history-header">
+                    <span>${escapeHtml(T.history)}</span>
+                    <span>
+                        <span id="grf-history-count">0</span>
+                        <span id="grf-history-arrow">▾</span>
+                    </span>
+                </div>
+
+                <div id="grf-history-list"></div>
+
                 <div id="grf-actions">
                     <button
                         class="grf-action-btn"
@@ -848,8 +1339,7 @@
                 <div id="grf-other-list"></div>
 
                 <div id="grf-footer">
-                    ${escapeHtml(T.source)}:
-                    /backend-api/wham/rate-limit-reset-credits
+                    ${escapeHtml(T.dataWaiting)}
                 </div>
             </div>
         `;
@@ -865,6 +1355,11 @@
         statusEl =
             panel.querySelector('#grf-status');
 
+        applyTheme();
+        installThemeWatcher();
+        restorePanelPosition();
+        installDragBehaviour();
+
 
         panel
             .querySelector('#grf-header')
@@ -872,6 +1367,7 @@
                 'click',
                 event => {
                     if (
+                        suppressHeaderClick ||
                         event.target.closest('#grf-close') ||
                         event.target.closest('#grf-toggle')
                     ) {
@@ -906,6 +1402,26 @@
                 resetCredits.clear();
                 otherMatches.clear();
                 render();
+            };
+
+
+        panel
+            .querySelector('#grf-history-header')
+            .onclick = () => {
+                const historyList =
+                    panel.querySelector('#grf-history-list');
+
+                const isOpen =
+                    historyList.style.display === 'block';
+
+                historyList.style.display =
+                    isOpen ? 'none' : 'block';
+
+                const arrow =
+                    panel.querySelector('#grf-history-arrow');
+
+                arrow.textContent =
+                    isOpen ? '▾' : '▴';
             };
 
 
@@ -1122,6 +1638,69 @@
     }
 
 
+    function renderCreditCard(
+        item,
+        index,
+        nearest = null,
+        expired = false
+    ) {
+        const isNearest =
+            item === nearest;
+
+        return `
+            <div
+                class="
+                    grf-card
+                    ${isNearest ? 'grf-nearest' : ''}
+                    ${expired ? 'grf-expired' : ''}
+                "
+            >
+                <div class="grf-card-top">
+                    <span class="grf-card-name">
+                        ${escapeHtml(T.credit(index + 1))}
+                    </span>
+
+                    ${
+                        isNearest
+                            ? `
+                                <span class="grf-badge">
+                                    ${escapeHtml(T.nearest)}
+                                </span>
+                              `
+                            : expired
+                                ? `
+                                    <span class="grf-expired-label">
+                                        ${escapeHtml(T.expired)}
+                                    </span>
+                                  `
+                                : ''
+                    }
+                </div>
+
+                <div class="grf-date-row">
+                    <span class="grf-date">
+                        ${escapeHtml(
+                            formatDateOnly(item.date)
+                        )}
+                    </span>
+
+                    <span class="grf-time">
+                        ${escapeHtml(
+                            formatTimeOnly(item.date)
+                        )}
+                    </span>
+                </div>
+
+                <div class="grf-zone">
+                    ${escapeHtml(
+                        formatTimeZoneLabel(item.date)
+                    )}
+                </div>
+            </div>
+        `;
+    }
+
+
     function render() {
         ensurePanel();
 
@@ -1139,28 +1718,33 @@
         const now =
             Date.now();
 
-        const miniCount =
-            panel.querySelector('#grf-mini-count');
-
-        miniCount.textContent =
-            credits.length;
-
-        miniCount.classList.toggle(
-            'grf-visible',
-            credits.length > 0
-        );
-
-        const futureCredits =
+        const activeCredits =
             credits.filter(
                 item =>
                     item.date.getTime() > now
             );
 
+        const expiredCredits =
+            credits.filter(
+                item =>
+                    item.date.getTime() <= now
+            );
+
         const nearest =
-            futureCredits.length
-                ? futureCredits[0]
+            activeCredits.length
+                ? activeCredits[0]
                 : null;
 
+        const miniCount =
+            panel.querySelector('#grf-mini-count');
+
+        miniCount.textContent =
+            activeCredits.length;
+
+        miniCount.classList.toggle(
+            'grf-visible',
+            activeCredits.length > 0
+        );
 
         if (!credits.length) {
             statusEl.textContent =
@@ -1171,76 +1755,80 @@
                     ${escapeHtml(T.empty)}
                 </div>
             `;
+        } else if (!activeCredits.length) {
+            statusEl.textContent =
+                T.noActive;
+
+            mainList.innerHTML = `
+                <div class="grf-empty">
+                    ${escapeHtml(T.noActive)}
+                </div>
+            `;
         } else {
             statusEl.textContent =
-                T.found(credits.length);
+                T.found(activeCredits.length);
 
             mainList.innerHTML =
-                credits
+                activeCredits
                     .map(
-                        (item, index) => {
-                            const isNearest =
-                                item === nearest;
-
-                            const expired =
-                                item.date.getTime() <= now;
-
-                            return `
-                                <div
-                                    class="
-                                        grf-card
-                                        ${isNearest ? 'grf-nearest' : ''}
-                                        ${expired ? 'grf-expired' : ''}
-                                    "
-                                >
-                                    <div class="grf-card-top">
-                                        <span class="grf-card-name">
-                                            ${escapeHtml(T.credit(index + 1))}
-                                        </span>
-
-                                        ${
-                                            isNearest
-                                                ? `
-                                                    <span class="grf-badge">
-                                                        ${escapeHtml(T.nearest)}
-                                                    </span>
-                                                  `
-                                                : expired
-                                                    ? `
-                                                        <span class="grf-expired-label">
-                                                            ${escapeHtml(T.expired)}
-                                                        </span>
-                                                      `
-                                                    : ''
-                                        }
-                                    </div>
-
-                                    <div class="grf-date-row">
-                                        <span class="grf-date">
-                                            ${escapeHtml(
-                                                formatDateOnly(item.date)
-                                            )}
-                                        </span>
-
-                                        <span class="grf-time">
-                                            ${escapeHtml(
-                                                formatTimeOnly(item.date)
-                                            )}
-                                        </span>
-                                    </div>
-
-                                    <div class="grf-zone">
-                                        ${escapeHtml(
-                                            formatTimeZoneLabel(item.date)
-                                        )}
-                                    </div>
-                                </div>
-                            `;
-                        }
+                        (item, index) =>
+                            renderCreditCard(
+                                item,
+                                index,
+                                nearest,
+                                false
+                            )
                     )
                     .join('');
         }
 
+        const historyHeader =
+            panel.querySelector('#grf-history-header');
+
+        const historyList =
+            panel.querySelector('#grf-history-list');
+
+        const historyCount =
+            panel.querySelector('#grf-history-count');
+
+        historyCount.textContent =
+            expiredCredits.length;
+
+        historyHeader.classList.toggle(
+            'grf-visible',
+            expiredCredits.length > 0
+        );
+
+        if (!expiredCredits.length) {
+            historyList.style.display =
+                'none';
+
+            historyList.innerHTML =
+                '';
+        } else {
+            historyList.innerHTML =
+                expiredCredits
+                    .map(
+                        (item, index) =>
+                            renderCreditCard(
+                                item,
+                                index,
+                                null,
+                                true
+                            )
+                    )
+                    .join('');
+        }
+
+        const footer =
+            panel.querySelector('#grf-footer');
+
+        if (footer) {
+            footer.textContent =
+                credits.length
+                    ? T.dataReady
+                    : T.dataWaiting;
+        }
 
         const others =
             Array.from(otherMatches.values());
@@ -1295,7 +1883,12 @@
 
     async function copyResetTimes() {
         const credits =
-            getSortedCredits();
+            getSortedCredits()
+                .filter(
+                    item =>
+                        item.date.getTime() >
+                        Date.now()
+                );
 
         if (!credits.length) {
             return;
@@ -1502,7 +2095,7 @@
 
     console.log(
         PREFIX,
-        'v1.0.2 started',
+        'v1.1.1 started',
         {
             timeZone: LOCAL_TIME_ZONE,
             language: UI_LANG,
