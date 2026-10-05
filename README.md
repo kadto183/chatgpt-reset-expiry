@@ -1,17 +1,22 @@
-# ChatGPT Reset Expiry｜ChatGPT 重置额度有效期
+# ChatGPT Reset Expiry｜ChatGPT 重置额度有效期查询插件
 
 [中文说明](#中文说明) · [English](#english)
 
-**精确查看 ChatGPT 重置额度（Reset Credits）的失效时间、重置时间与到期时间，并自动转换为浏览器当前本地时区。**
+**一个用于查询 ChatGPT 重置额度（Reset Credits）准确失效时间的油猴插件，可显示精确到秒的有效期，并自动转换为浏览器当前本地时区。**
 
 **View the exact expiration time of ChatGPT reset credits in your browser's local timezone.**
 
-> 轻量、开源、仅本地运行。脚本不会上传账号数据，也不会主动重放 ChatGPT 的受保护请求。
+> 如果 ChatGPT 只告诉你“某天到期”，这个插件会进一步显示具体几点几分几秒失效。轻量、开源、仅本地运行，不上传账号数据，也不主动重放 ChatGPT 的受保护请求。
 
 ## 中文说明
 
+### 这个插件是做什么的？
+
+ChatGPT 的重置额度界面有时只显示到期日期，不显示具体时间。本插件会读取页面已经返回的重置额度数据，帮你查询每个额度准确到秒的失效时间，并按浏览器当前时区显示。
+
 ### 功能
 
+- 查询 ChatGPT 重置额度的准确有效期与失效时间
 - 读取 ChatGPT 页面本身返回的重置额度信息
 - 显示精确到秒的失效时间
 - 自动使用浏览器当前时区换算
@@ -30,7 +35,7 @@
 
 然后打开：
 
-**[安装 ChatGPT Reset Expiry 脚本](https://raw.githubusercontent.com/kadto183/chatgpt-reset-expiry/main/chatgpt-reset-expiry.user.js)**
+**[安装 ChatGPT 重置额度有效期查询插件](https://raw.githubusercontent.com/kadto183/chatgpt-reset-expiry/main/chatgpt-reset-expiry.user.js)**
 
 Userscript 管理器应会自动打开安装页面。
 
@@ -76,7 +81,7 @@ Intl.DateTimeFormat().resolvedOptions().timeZone
 
 本项目也可通过这些关键词理解或查找：
 
-`ChatGPT 重置额度` · `ChatGPT 重置时间` · `ChatGPT 到期时间` · `ChatGPT Reset Credits` · `ChatGPT Reset Expiry`
+`ChatGPT 重置额度` · `ChatGPT 重置额度有效期` · `ChatGPT 重置时间` · `ChatGPT 到期时间` · `ChatGPT 有效期查询` · `ChatGPT 油猴插件` · `ChatGPT Reset Credits` · `ChatGPT Reset Expiry`
 
 ---
 
