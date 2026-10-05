@@ -28,7 +28,8 @@ ChatGPT 的重置额度界面有时只显示到期日期，不显示具体时间
 - 自动记住展开 / 收起状态
 - 悬浮窗口支持拖动，并记住用户放置的位置
 - 自动适配深色与浅色主题
-- 主界面只显示仍然有效的额度，已失效额度收进历史折叠区
+- 主界面进一步精简，只保留有效额度、时间与复制操作
+- 已失效额度与其他检测结果统一收进“更多信息”区域
 - 自动去重并按失效时间排序
 - 标记最近到期的额度
 - 支持一键复制全部有效额度时间
@@ -101,7 +102,8 @@ Intl.DateTimeFormat().resolvedOptions().timeZone
 - Starts collapsed and respects the user's saved expand/collapse preference
 - Supports dragging and remembers the panel position
 - Adapts automatically to light and dark themes
-- Shows active credits in the main view and keeps expired credits in a collapsed history section
+- Uses a cleaner main panel focused on active credits and expiration times
+- Moves expired credits and secondary diagnostics into a single collapsed More section
 - Deduplicates and sorts expiration times
 - Highlights the next credit to expire
 - Copies all active expiration times with one click
