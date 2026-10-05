@@ -5,7 +5,7 @@
 // @name:zh-MO   ChatGPT 重置額度有效期查詢插件
 // @name:zh-TW   ChatGPT 重置額度有效期查詢插件
 // @namespace    https://github.com/kadto183/chatgpt-reset-expiry
-// @version      1.1.2
+// @version      1.1.3
 // @description  View the exact expiration time of ChatGPT reset credits in your browser's local timezone.
 // @description:zh-CN 查询 ChatGPT 重置额度的准确有效期与失效时间，精确到秒并自动转换为浏览器当前时区。
 // @description:zh-HK 查詢 ChatGPT 重置額度的準確有效期與失效時間，精確到秒並自動轉換為瀏覽器目前時區。
@@ -109,8 +109,9 @@
 
     const TEXT = {
         'zh-Hans': {
-            title: 'GPT 重置额度有效期查询',
+            title: 'GPT 重置额度有效期',
             subtitle: '查询额度具体到几点失效',
+            more: '更多信息',
             waiting: '正在检测当前页面…',
             found: count => `当前有效额度 ${count} 个`,
             empty: '当前尚未检测到重置额度',
@@ -132,8 +133,9 @@
         },
 
         'zh-Hant': {
-            title: 'GPT 重置額度有效期查詢',
+            title: 'GPT 重置額度有效期',
             subtitle: '查詢額度具體到幾點失效',
+            more: '更多資訊',
             waiting: '正在偵測目前頁面…',
             found: count => `目前有效額度 ${count} 個`,
             empty: '目前尚未偵測到重置額度',
@@ -155,8 +157,9 @@
         },
 
         en: {
-            title: 'GPT Reset Credits',
+            title: 'GPT Reset Expiry',
             subtitle: 'View the exact expiration time',
+            more: 'More',
             waiting: 'Checking the current page…',
             found: count =>
                 `${count} active reset credit${count === 1 ? '' : 's'}`,
@@ -821,7 +824,7 @@
         }
 
         #gpt-reset-finder-panel.grf-collapsed {
-            width: 174px;
+            width: 158px;
             border-radius: 12px;
         }
 
@@ -848,8 +851,8 @@
         }
 
         #gpt-reset-finder-panel.grf-expanded {
-            width: 410px;
-            max-height: 76vh;
+            width: 360px;
+            max-height: 70vh;
         }
 
         #grf-header {
@@ -858,7 +861,7 @@
             touch-action: none;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 14px 12px;
+            padding: 11px 12px 10px;
             border-bottom: 1px solid rgba(255,255,255,.075);
             background:
                 linear-gradient(
@@ -872,7 +875,7 @@
         #grf-title-wrap {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 0;
         }
 
         #grf-title-line {
@@ -882,9 +885,9 @@
         }
 
         #grf-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 650;
-            letter-spacing: .2px;
+            letter-spacing: .1px;
         }
 
         #grf-mini-count {
@@ -906,8 +909,7 @@
         }
 
         #grf-subtitle {
-            font-size: 11px;
-            color: #8d8d8d;
+            display: none;
         }
 
         #grf-header-actions {
@@ -932,12 +934,12 @@
         }
 
         #grf-body {
-            max-height: calc(76vh - 60px);
+            max-height: calc(70vh - 52px);
             overflow-y: auto;
         }
 
         #grf-overview {
-            padding: 12px 14px 5px;
+            padding: 9px 12px 2px;
         }
 
         #grf-status {
@@ -946,19 +948,17 @@
         }
 
         #grf-current-zone {
-            margin-top: 5px;
-            font-size: 10px;
-            color: #666;
+            display: none;
         }
 
         #grf-main-list {
-            padding: 4px 12px 11px;
+            padding: 3px 10px 8px;
         }
 
         .grf-card {
             position: relative;
-            margin-top: 9px;
-            padding: 12px 13px 13px;
+            margin-top: 7px;
+            padding: 10px 11px 11px;
             background:
                 linear-gradient(
                     145deg,
@@ -993,12 +993,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 7px;
         }
 
         .grf-card-name {
-            font-size: 12px;
-            color: #b7b7b7;
+            font-size: 11px;
+            color: #a8a8a8;
         }
 
         .grf-badge,
@@ -1023,19 +1023,19 @@
         .grf-date-row {
             display: flex;
             align-items: baseline;
-            gap: 12px;
+            gap: 9px;
             white-space: nowrap;
         }
 
         .grf-date {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 650;
             color: #f1f1f1;
             font-variant-numeric: tabular-nums;
         }
 
         .grf-time {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 650;
             color: #efc969;
             font-family: "SFMono-Regular", Consolas, monospace;
@@ -1043,22 +1043,21 @@
         }
 
         .grf-zone {
-            margin-top: 6px;
-            color: #7f7f7f;
-            font-size: 10.5px;
+            margin-top: 4px;
+            color: #777;
+            font-size: 9.5px;
         }
 
         #grf-actions {
             display: flex;
-            gap: 7px;
-            padding: 0 12px 12px;
+            padding: 1px 10px 9px;
         }
 
         .grf-action-btn {
             flex: 1;
             width: 100%;
-            padding: 8px 10px;
-            border-radius: 8px;
+            padding: 7px 9px;
+            border-radius: 7px;
             border: 1px solid rgba(255,255,255,.10);
             background: rgba(255,255,255,.043);
             color: #ccc;
@@ -1114,6 +1113,26 @@
             font-size: 12px;
         }
 
+        #grf-more-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-top: 1px solid rgba(255,255,255,.07);
+            color: #777;
+            font-size: 10.5px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #grf-more-header:hover {
+            background: rgba(255,255,255,.025);
+        }
+
+        #grf-more-list {
+            display: none;
+        }
+
         #grf-history-header {
             display: none;
             align-items: center;
@@ -1128,6 +1147,14 @@
 
         #grf-history-header.grf-visible {
             display: flex;
+        }
+
+        #grf-more-list #grf-history-header,
+        #grf-more-list #grf-other-header {
+            padding: 7px 12px;
+            border-top: 0;
+            font-size: 10px;
+            background: transparent;
         }
 
         #grf-history-header:hover {
@@ -1225,12 +1252,14 @@
             color: #444;
         }
 
+        #gpt-reset-finder-panel.grf-light #grf-more-header,
         #gpt-reset-finder-panel.grf-light #grf-other-header,
         #gpt-reset-finder-panel.grf-light #grf-history-header {
             border-top-color: rgba(0,0,0,.07);
             color: #666;
         }
 
+        #gpt-reset-finder-panel.grf-light #grf-more-header:hover,
         #gpt-reset-finder-panel.grf-light #grf-other-header:hover,
         #gpt-reset-finder-panel.grf-light #grf-history-header:hover {
             background: rgba(0,0,0,.025);
@@ -1291,11 +1320,6 @@
                     <div id="grf-status">
                         ${escapeHtml(T.waiting)}
                     </div>
-
-                    <div id="grf-current-zone">
-                        ${escapeHtml(T.timezone)}:
-                        ${escapeHtml(getCurrentZoneSummary())}
-                    </div>
                 </div>
 
                 <div id="grf-main-list">
@@ -1304,16 +1328,6 @@
                     </div>
                 </div>
 
-                <div id="grf-history-header">
-                    <span>${escapeHtml(T.history)}</span>
-                    <span>
-                        <span id="grf-history-count">0</span>
-                        <span id="grf-history-arrow">▾</span>
-                    </span>
-                </div>
-
-                <div id="grf-history-list"></div>
-
                 <div id="grf-actions">
                     <button
                         class="grf-action-btn"
@@ -1321,18 +1335,31 @@
                     >${escapeHtml(T.copy)}</button>
                 </div>
 
-                <div id="grf-other-header">
-                    <span>${escapeHtml(T.other)}</span>
-                    <span>
-                        <span id="grf-other-count">0</span>
-                        <span id="grf-other-arrow">▾</span>
-                    </span>
+                <div id="grf-more-header">
+                    <span>${escapeHtml(T.more)}</span>
+                    <span id="grf-more-arrow">▾</span>
                 </div>
 
-                <div id="grf-other-list"></div>
+                <div id="grf-more-list">
+                    <div id="grf-history-header">
+                        <span>${escapeHtml(T.history)}</span>
+                        <span>
+                            <span id="grf-history-count">0</span>
+                            <span id="grf-history-arrow">▾</span>
+                        </span>
+                    </div>
 
-                <div id="grf-footer">
-                    ${escapeHtml(T.dataWaiting)}
+                    <div id="grf-history-list"></div>
+
+                    <div id="grf-other-header">
+                        <span>${escapeHtml(T.other)}</span>
+                        <span>
+                            <span id="grf-other-count">0</span>
+                            <span id="grf-other-arrow">▾</span>
+                        </span>
+                    </div>
+
+                    <div id="grf-other-list"></div>
                 </div>
             </div>
         `;
@@ -1386,6 +1413,26 @@
                 event.stopPropagation();
                 dismissed = true;
                 panel.style.display = 'none';
+            };
+
+
+        panel
+            .querySelector('#grf-more-header')
+            .onclick = () => {
+                const moreList =
+                    panel.querySelector('#grf-more-list');
+
+                const isOpen =
+                    moreList.style.display === 'block';
+
+                moreList.style.display =
+                    isOpen ? 'none' : 'block';
+
+                const arrow =
+                    panel.querySelector('#grf-more-arrow');
+
+                arrow.textContent =
+                    isOpen ? '▾' : '▴';
             };
 
 
@@ -1804,18 +1851,26 @@
                     .join('');
         }
 
-        const footer =
-            panel.querySelector('#grf-footer');
-
-        if (footer) {
-            footer.textContent =
-                credits.length
-                    ? T.dataReady
-                    : T.dataWaiting;
-        }
-
         const others =
             Array.from(otherMatches.values());
+
+        const moreHeader =
+            panel.querySelector('#grf-more-header');
+
+        const hasMore =
+            expiredCredits.length > 0 ||
+            others.length > 0;
+
+        moreHeader.style.display =
+            hasMore ? 'flex' : 'none';
+
+        if (!hasMore) {
+            const moreList =
+                panel.querySelector('#grf-more-list');
+
+            moreList.style.display =
+                'none';
+        }
 
         panel
             .querySelector('#grf-other-count')
@@ -2079,7 +2134,7 @@
 
     console.log(
         PREFIX,
-        'v1.1.2 started',
+        'v1.1.3 started',
         {
             timeZone: LOCAL_TIME_ZONE,
             language: UI_LANG,
