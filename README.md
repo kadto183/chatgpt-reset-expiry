@@ -1,10 +1,14 @@
-# ChatGPT Reset Expiry
+# ChatGPT Reset Expiry｜ChatGPT 重置额度有效期
 
-[中文](#中文) · [English](#english)
+[中文说明](#中文说明) · [English](#english)
 
-A lightweight userscript that reveals the exact expiration time of ChatGPT reset credits in your browser's local timezone.
+**精确查看 ChatGPT 重置额度（Reset Credits）的失效时间、重置时间与到期时间，并自动转换为浏览器当前本地时区。**
 
-## 中文
+**View the exact expiration time of ChatGPT reset credits in your browser's local timezone.**
+
+> 轻量、开源、仅本地运行。脚本不会上传账号数据，也不会主动重放 ChatGPT 的受保护请求。
+
+## 中文说明
 
 ### 功能
 
@@ -26,7 +30,7 @@ A lightweight userscript that reveals the exact expiration time of ChatGPT reset
 
 然后打开：
 
-**[安装脚本](https://raw.githubusercontent.com/kadto183/chatgpt-reset-expiry/main/chatgpt-reset-expiry.user.js)**
+**[安装 ChatGPT Reset Expiry 脚本](https://raw.githubusercontent.com/kadto183/chatgpt-reset-expiry/main/chatgpt-reset-expiry.user.js)**
 
 Userscript 管理器应会自动打开安装页面。
 
@@ -35,7 +39,7 @@ Userscript 管理器应会自动打开安装页面。
 1. 安装脚本并打开 ChatGPT。
 2. 脚本默认只显示一个小型“重置额度”条。
 3. 正常浏览 ChatGPT 或进入 Usage / 使用情况相关页面。
-4. 如果页面返回有效的 reset credits 数据，脚本会自动展开一次并显示精确失效时间。
+4. 如果页面返回有效的 Reset Credits 数据，脚本会自动展开一次并显示精确失效时间。
 5. 手动收起后，同一页面中的重复请求不会反复弹出。
 
 ### 隐私与安全
@@ -68,6 +72,12 @@ Intl.DateTimeFormat().resolvedOptions().timeZone
 
 脚本优先读取该响应中的 `expires_at` 数据作为主结果。
 
+### 适合搜索的名称
+
+本项目也可通过这些关键词理解或查找：
+
+`ChatGPT 重置额度` · `ChatGPT 重置时间` · `ChatGPT 到期时间` · `ChatGPT Reset Credits` · `ChatGPT Reset Expiry`
+
 ---
 
 ## English
@@ -88,7 +98,7 @@ Intl.DateTimeFormat().resolvedOptions().timeZone
 
 Install a userscript manager such as Tampermonkey or Violentmonkey, then open:
 
-**[Install userscript](https://raw.githubusercontent.com/kadto183/chatgpt-reset-expiry/main/chatgpt-reset-expiry.user.js)**
+**[Install ChatGPT Reset Expiry](https://raw.githubusercontent.com/kadto183/chatgpt-reset-expiry/main/chatgpt-reset-expiry.user.js)**
 
 Your userscript manager should offer to install it automatically.
 
